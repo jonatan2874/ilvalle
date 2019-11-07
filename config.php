@@ -128,6 +128,66 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 			<div id="page-wrapper">
 				<div class="graphs">
 					
+					<h3 class="blank1">Cargar Informacion </h3>
+					<div class="col_3">
+						<div class="col-md-3 widget widget1">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Rete. <br>fuente </h5>
+								  <div class="grow">
+									<p style="cursor: pointer;" onclick="showHiddenUpload('fuente')">Cargar</p>
+								  </div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 widget widget1">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Rete. <br>Iva </h5>
+								  <div class="grow grow1">
+									<p style="cursor: pointer;" onclick="showHiddenUpload('iva')">Cargar</p>
+								  </div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 widget widget1">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Rete. <br>Ica </h5>
+								  <div class="grow grow3">
+									<p style="cursor: pointer;" onclick="showHiddenUpload('ica')">Cargar</p>
+								  </div>
+								</div>
+							</div>
+						 </div>
+						 <div class="col-md-3 widget">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Rete. <br>Estampillas </h5>
+								  <div class="grow grow2">
+									<p style="cursor: pointer;" onclick="showHiddenUpload('estampillas')">Cargar</p>
+								  </div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 widget widget1">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Ingresos y <br>Retenciones </h5>
+								  <div class="grow grow3">
+									<p style="cursor: pointer;" onclick="showHiddenUpload('ica')">Cargar</p>
+								  </div>
+								</div>
+							</div>
+						 </div>
+						<div class="clearfix"> </div>
+					</div>
+					<br>
 					<h3 class="blank1">Configurar Informes</h3>
 					<div class="col_3">
 						<div class="col-md-3 widget widget1">
@@ -176,66 +236,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 						</div>
 						<div class="clearfix"> </div>
 					</div>
-					<br>
-					<h3 class="blank1">Cargar Informacion </h3>
-					<div class="col_3">
-						<div class="col-md-3 widget widget1">
-							<div class="r3_counter_box">
-								<i class="fa fa-file"></i>
-								<div class="stats">
-								  <h5>Rete. <br>fuente </h5>
-								  <div class="grow">
-									<p style="cursor: pointer;" onclick="configCert('fuente')">Cargar</p>
-								  </div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-3 widget widget1">
-							<div class="r3_counter_box">
-								<i class="fa fa-file"></i>
-								<div class="stats">
-								  <h5>Rete. <br>Iva </h5>
-								  <div class="grow grow1">
-									<p style="cursor: pointer;" onclick="configCert('iva')">Cargar</p>
-								  </div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-3 widget widget1">
-							<div class="r3_counter_box">
-								<i class="fa fa-file"></i>
-								<div class="stats">
-								  <h5>Rete. <br>Ica </h5>
-								  <div class="grow grow3">
-									<p style="cursor: pointer;" onclick="configCert('ica')">Cargar</p>
-								  </div>
-								</div>
-							</div>
-						 </div>
-						 <div class="col-md-3 widget">
-							<div class="r3_counter_box">
-								<i class="fa fa-file"></i>
-								<div class="stats">
-								  <h5>Rete. <br>Estampillas </h5>
-								  <div class="grow grow2">
-									<p style="cursor: pointer;" onclick="configCert('estampillas')">Cargar</p>
-								  </div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-3 widget widget1">
-							<div class="r3_counter_box">
-								<i class="fa fa-file"></i>
-								<div class="stats">
-								  <h5>Ingresos y <br>Retenciones </h5>
-								  <div class="grow grow3">
-									<p style="cursor: pointer;" onclick="configCert('ica')">Cargar</p>
-								  </div>
-								</div>
-							</div>
-						 </div>
-						<div class="clearfix"> </div>
-					</div>
+					
 
 				</div>
 			<!--body wrapper start-->
@@ -250,8 +251,24 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 
       <!-- main content end-->
    </section>
-   <!-- <div class="containLoad" style="visibility: hidden;"> -->
-   <div class="containLoad" >
+   <div class="containLoad" id="containLoad" style="visibility: hidden;">
+   <!-- <div class="containLoad" > -->
+   		<!-- <form action="/file-upload" class="dropzone">
+		  <div class="fallback" id="upload">
+		    <input name="file" type="file" multiple />
+		  </div>
+		</form> -->
+		<div id="dropzone">
+			<span style="color: #FFF;font-weight: bold;font-size: 25px;cursor: pointer;" onclick="showHiddenUpload()">X</span>
+			<form action="/upload" class="dropzone needsclick dz-clickable" id="upload">
+			  <div class="dz-message needsclick">
+			    Arrastre los archivos aqui o haga click para seleccionar<br>
+			    <span class="note needsclick">(Cargue el archivo excel <strong>solo se permiten</strong> XLS y XLSX)</span>
+			  </div>
+
+			</form>
+		</div>
+
 		<!-- <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div> -->
 	</div>
 <script src="js/jquery.nicescroll.js"></script>
@@ -259,9 +276,24 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <!-- Bootstrap Core JavaScript -->
 <script src="js/bootstrap.min.js"></script>
 <script>
+	// var myDropzone = new Dropzone("#upload", { url: "/file/post"});
 	var configCert=(type)=>{
 		// config_report
 		window.location = "config_report.php?type="+type;
+	}
+
+	var showHiddenUpload = ()=>{
+		// console.log($(".containLoad"));
+		let style=document.getElementById('containLoad').getAttribute("style");
+		console.log(style);
+		if (style=='visibility: hidden;') {			
+			$(".containLoad").css("visibility", "visible");
+			// $("#containLoad").css("visibility", "visible");
+		}
+		else{
+			$(".containLoad").css("visibility", "hidden");
+		}
+
 	}
 </script>
 </body>
