@@ -180,7 +180,67 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 								<div class="stats">
 								  <h5>Ingresos y <br>Retenciones </h5>
 								  <div class="grow grow3">
-									<p style="cursor: pointer;" onclick="showHiddenUpload('ica')">Cargar</p>
+									<p style="cursor: pointer;" onclick="showHiddenUpload('ingresos_retenciones')">Cargar</p>
+								  </div>
+								</div>
+							</div>
+						 </div>
+						<div class="clearfix"> </div>
+					</div>
+					<br>
+					<h3 class="blank1">Eliminar Informacion </h3>
+					<div class="col_3">
+						<div class="col-md-3 widget widget1">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Rete. <br>fuente </h5>
+								  <div class="grow">
+									<p style="cursor: pointer;" onclick="deleteDataCert('fuente')">Eliminar</p>
+								  </div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 widget widget1">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Rete. <br>Iva </h5>
+								  <div class="grow grow1">
+									<p style="cursor: pointer;" onclick="deleteDataCert('iva')">Eliminar</p>
+								  </div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 widget widget1">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Rete. <br>Ica </h5>
+								  <div class="grow grow3">
+									<p style="cursor: pointer;" onclick="deleteDataCert('ica')">Eliminar</p>
+								  </div>
+								</div>
+							</div>
+						 </div>
+						 <div class="col-md-3 widget">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Rete. <br>Estampillas </h5>
+								  <div class="grow grow2">
+									<p style="cursor: pointer;" onclick="deleteDataCert('estampillas')">Eliminar</p>
+								  </div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 widget widget1">
+							<div class="r3_counter_box">
+								<i class="fa fa-file"></i>
+								<div class="stats">
+								  <h5>Ingresos y <br>Retenciones </h5>
+								  <div class="grow grow3">
+									<p style="cursor: pointer;" onclick="deleteDataCert('ingresos_retenciones')">Eliminar</p>
 								  </div>
 								</div>
 							</div>
@@ -252,20 +312,21 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
       <!-- main content end-->
    </section>
    <div class="containLoad" id="containLoad" style="visibility: hidden;">
-   <!-- <div class="containLoad" > -->
-   		<!-- <form action="/file-upload" class="dropzone">
-		  <div class="fallback" id="upload">
-		    <input name="file" type="file" multiple />
-		  </div>
-		</form> -->
 		<div id="dropzone">
 			<span style="color: #FFF;font-weight: bold;font-size: 25px;cursor: pointer;" onclick="showHiddenUpload()">X</span>
-			<form action="/upload" class="dropzone needsclick dz-clickable" id="upload">
+			<form action="" class="dropzone needsclick dz-clickable" id="upload">
+			<h4>
+				El formato de excel debera tener la siguiente estructura y se cargara informacion a
+				partir de la segunda fila, la primera fila se tomara como el titulo del excel
+			</h4>
+			<img src="images/guia.png" style="width: 100%;height: 100px;">
+			  <input type="date" name="anio" id="anio" >
 			  <div class="dz-message needsclick">
+			  	<h2 id='titleCert'></h2>
 			    Arrastre los archivos aqui o haga click para seleccionar<br>
-			    <span class="note needsclick">(Cargue el archivo excel <strong>solo se permiten</strong> XLS y XLSX)</span>
+			    <span class="note needsclick">(Cargue el archivo excel <strong>solo se permiten</strong> xls y xlsx)</span>
 			  </div>
-
+			  <input type="hidden" name="typeCert" id="typeCert">
 			</form>
 		</div>
 
@@ -277,15 +338,50 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <script src="js/bootstrap.min.js"></script>
 <script>
 	// var myDropzone = new Dropzone("#upload", { url: "/file/post"});
+	var dropzone = new Dropzone(
+								"div#dropzone", 
+								{ 
+									url: "backend/config/upload_file.php",
+								 	success : function(file, result){
+								        // console.log(file);
+								        // console.log(result);
+	            						var response = jQuery.parseJSON( result );
+	            						console.log(response);
+	            						alert(response.msg)
+	            						if (response.status=='success'){ location.reload(); }
+								    }
+								}
+							);
 	var configCert=(type)=>{
 		// config_report
 		window.location = "config_report.php?type="+type;
 	}
 
-	var showHiddenUpload = ()=>{
+	var showHiddenUpload = (typeCert)=>{
 		// console.log($(".containLoad"));
-		let style=document.getElementById('containLoad').getAttribute("style");
-		console.log(style);
+		let style=document.getElementById('containLoad').getAttribute("style")
+		,	title_upload = ''
+		switch(typeCert){
+			case 'fuente':
+				title_upload = 'Cargar rete fuente';
+			break;
+			case 'iva':
+				title_upload = 'Cargar Rete Iva';
+			break;
+			case 'ica':
+				title_upload = 'Cargar Rete Ica';
+			break;
+			case 'estampillas':
+				title_upload = 'Cargar Estampillas';
+			break;
+			case 'ingresos_retenciones':
+				title_upload = 'Cargar ingresos y retenciones';
+			break;
+		}
+
+		document.getElementById('typeCert').value=typeCert;
+		document.getElementById('titleCert').innerHTML=title_upload;
+		// console.log(style);
 		if (style=='visibility: hidden;') {			
 			$(".containLoad").css("visibility", "visible");
 			// $("#containLoad").css("visibility", "visible");
@@ -293,8 +389,41 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 		else{
 			$(".containLoad").css("visibility", "hidden");
 		}
+	}
+	
+	var deleteDataCert = (typeCert)=>{
+		if (!confirm('Relamente desea eliminar los datos del certificado?')) {return;}
+		var anio = prompt("Por favor digite el año a eliminar", "");
+
+		if (anio == null) {
+		  alert("debe digitar el año");
+		  return;
+		}
+
+		$.ajax({
+			method : 'POST',
+			url    : 'backend/config/controller.php',
+			data   : {anio:anio, method:"deleteDataCert",typeCert:typeCert},
+            beforeSend: function(){
+                // $('.submitBtn').attr("disabled","disabled");
+                // $('#fupForm').css("opacity",".5");
+            },
+            success: function(result){
+            	var response = jQuery.parseJSON( result );
+            	console.log(result);
+				// $(".containLoad").css("visibility", "hidden");
+				if (response.response=='success') { 
+					// location.reload();
+					// alert(response.msg);
+					// $("#fupForm").trigger("reset"); 
+					// if ($("#id_producto").val()>0){ window.location = "products.php"; }
+				}
+				else{ alert(response.msg) }
+            }
+        });
 
 	}
+
 </script>
 </body>
 </html>

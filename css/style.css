@@ -7661,7 +7661,12 @@ textarea.form-control1.control2 {
     border: 2px dashed #0087F7;
     border-radius: 5px;
     background: white;
+    text-align: center;
 }
+.dropzone input{
+	margin-top: 10px;
+}
+
 .dropzone .dz-message {
     text-align: center;
     margin: 2em 0;
