@@ -455,9 +455,109 @@
             // }
 
             $bodyResul.='
-                        <tr>
-                            <td colspan="38">Firma del Retenedor</td>
+                        <tr class="title">
+                            <td style="background-color:#FEFF8E;" colspan="27">Concepto de los Ingresos</td>
+                            <td style="background-color:#FEFF8E;" colspan="11">Valor</td>
                         </tr>
+                        <tr>
+                            <td colspan="27">Pagos por salarios o emolumentos eclesiásticos</td>
+                            <td>37</td>
+                            <td colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#CCFFCC;"  colspan="27">Pagos por honorarios</td>
+                            <td style="background-color:#CCFFCC;" >38</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="27">Pagos por servicios</td>
+                            <td>39</td>
+                            <td colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#CCFFCC;"  colspan="27">Pagos por comisiones</td>
+                            <td style="background-color:#CCFFCC;" >40</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="27">Pagos por prestaciones sociales</td>
+                            <td>41</td>
+                            <td colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#CCFFCC;" colspan="27">Pagos por viáticos</td>
+                            <td style="background-color:#CCFFCC;">42</td>
+                            <td style="background-color:#CCFFCC;" colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td   colspan="27"> Pagos por gastos de representación</td>
+                            <td  >43</td>
+                            <td   colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#CCFFCC;"  colspan="27"> Pagos por compensaciones por el trabajo asociado cooperativo</td>
+                            <td style="background-color:#CCFFCC;" >44</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="27">Otros pagos</td>
+                            <td>45</td>
+                            <td colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#CCFFCC;"  colspan="27">Cesantias e intereses de cesantias efectivamente pagadas, consignadas o reconocidas en el periodo</td>
+                            <td style="background-color:#CCFFCC;" >46</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="27">Pensiones de Jubilación, vejez o invalidez</td>
+                            <td>47</td>
+                            <td colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#CCFFCC;"  colspan="27">Total de ingresos brutos (Sume casillas 37 a 47)</td>
+                            <td style="background-color:#CCFFCC;" >48</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                        </tr>
+                        <tr class="title">
+                            <td style="background-color:#FEFF8E;" colspan="27">Concepto de los aportes</td>
+                            <td style="background-color:#FEFF8E;" colspan="11">Valor</td>
+                        </tr>
+                        <tr>
+                            <td colspan="27">Aportes obligatorios por salud</td>
+                            <td>49</td>
+                            <td colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#CCFFCC;" colspan="27">Aportes obligatorios a fondos de pensiones y solidaridad pensional y Aportes voluntarios al - RAIS</td>
+                            <td style="background-color:#CCFFCC;">50</td>
+                            <td style="background-color:#CCFFCC;" colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="27">Aportes voluntarios, a fondos de pensiones</td>
+                            <td>51</td>
+                            <td colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#CCFFCC;" colspan="27"> Aportes a cuentas AFC</td>
+                            <td style="background-color:#CCFFCC;">52</td>
+                            <td style="background-color:#CCFFCC;" colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="27">Valor de la retención en la fuente por rentas de trabajo y pensiones</td>
+                            <td>53</td>
+                            <td colspan="10">0</td>
+                        </tr>
+
+                        <tr>
+                            <td style="background-color:#CCFFCC;" colspan="27">Pagos al empleado  (No incluya valores de las casillas 38 a 41)</td>
+                            <td style="background-color:#CCFFCC;">54</td>
+                            <td style="background-color:#CCFFCC;" colspan="10">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="38"><b>Nombre del pagador o agente retenedor</b><br>ALARCON JARAMILLO *CARLOS</td>
+                        </tr>
+
                         <tr >
                             <td style="background-color:#FEFF8E;" class="title" colspan="38">Datos a Cargo del Asalariado</td>
                         </tr>
@@ -578,7 +678,18 @@
                             <td style="background-color:#CCFFCC;" colspan="7"></td>
                         </tr>
                         <tr>
-                            <td colspan="27">Certifico que durante el año gravable '.$this->anio.'  :</td>
+                            <td colspan="27">
+                                Certifico que durante el año gravable '.$this->anio.'  :<br>
+                                1. Por lo menos el 80% de mis ingresos brutos provinieron de una relación laboral o reglamentaria.
+                                2. Mi patrimonio bruto era igual o inferior a  4.500 UVT ($149.202.000).
+                                3. No fui responsable del impuesto sobre las ventas.
+                                4. Mis ingresos totales fueron iguales o inferiores a  1.400 UVT ( $46.418.000)
+                                5. Mis consumos mediante tarjeta de crédito no excedieron de  1.400 UVT ($46.418.000)
+                                6. Que el total de mis compras y consumos no superaron  1.400 UVT ($46.418.000)
+                                7. Que el valor total de mis consignaciones bancarias, depositos o inversiones financieras no excedieron los  1.400 UVT ($ 46.418.000)
+                                   Por lo tanto, manifiesto que no estoy obligado a presentar declaracion de renta y complementarios por el año gravable 2018
+
+                            </td>
                             <td colspan="11">Firma del Asalariado:</td>
                         </tr>
                         ';

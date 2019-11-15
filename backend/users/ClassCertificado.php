@@ -87,7 +87,7 @@
                         AND tipo='$typeCert' ";
             $query = mysqli_query($this->mysql,$sql);
             $query = mysqli_query($this->mysql,$sql);
-            $cliente = '';
+            // $cliente = '';
             $ciudad = '';
             $body    = '';
             $acumTotal=0;
