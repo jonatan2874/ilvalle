@@ -1,5 +1,5 @@
 <?php
-
+    error_reporting(E_ERROR | E_PARSE);
 
     // if($IMPRIME_XLS=='true'){
     //     // header('Content-Encoding: UTF-8');
@@ -52,194 +52,6 @@
         }
 
         /**
-        * @method getInfoEmpleado consultar los datos del empleado
-        */
-        public function getInfoEmpleado()
-        {
-            $sql="SELECT documento,nombre1,nombre2,apellido1,apellido2 FROM empleados WHERE activo=1 AND id_empresa=$this->id_empresa AND id=$this->id_empleado";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-
-            $this->arrayInfoEmpleado['documento'] = $this->mysql->result($query, 0,'documento');
-            $this->arrayInfoEmpleado['nombre1']   = $this->mysql->result($query, 0,'nombre1');
-            $this->arrayInfoEmpleado['nombre2']   = $this->mysql->result($query, 0,'nombre2');
-            $this->arrayInfoEmpleado['apellido1'] = $this->mysql->result($query, 0,'apellido1');
-            $this->arrayInfoEmpleado['apellido2'] = $this->mysql->result($query, 0,'apellido2');
-        }
-
-        /**
-        * @method getInfoEmpresa consultar la informacion de la empresa
-        */
-        public function getInfoEmpresa()
-        {
-            $sql="SELECT documento,digito_verificacion,razon_social FROM empresas WHERE activo=1 AND id=$this->id_empresa ";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            $this->arrayInfoEmpresa['documento']           = $this->mysql->result($query,0,'documento');
-            $this->arrayInfoEmpresa['digito_verificacion'] = $this->mysql->result($query,0,'digito_verificacion');
-            $this->arrayInfoEmpresa['razon_social']        = $this->mysql->result($query,0,'razon_social');
-
-            $sql="SELECT ciudad FROM empresas_sucursales WHERE activo=1 AND id=".$_SESSION['SUCURSAL'];
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            $this->arrayInfoEmpresa['ciudad'] = $this->mysql->result($query,0,'ciudad');
-        }
-
-        /**
-        * @method setSecciones consultar las secciones del informe
-        */
-        private function setSecciones()
-        {
-            $sql="SELECT id,nombre,nombre_total,codigo_total FROM certificado_ingreso_retenciones_empleados_secciones WHERE activo=1 AND id_empresa=$this->id_empresa";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            while ($row = $this->mysql->fetch_array($query)) {
-                $arrayTemp[$row['id']] = array(
-                                                'nombre'       => $row['nombre'],
-                                                'nombre_total' => $row['nombre_total'],
-                                                'codigo_total' => $row['codigo_total'],
-                                                );
-            }
-
-            $this->arraySecciones = $arrayTemp;
-        }
-
-        /**
-        * @method setFilas consultar las filas del informe
-        */
-        private function setFilas()
-        {
-            $sql="SELECT id,id_seccion,nombre,codigo FROM certificado_ingreso_retenciones_empleados_secciones_filas WHERE activo = 1 AND id_empresa=$this->id_empresa";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            while ($row = $this->mysql->fetch_array($query)) {
-                $arrayTemp[$row['id_seccion']][$row['id']] = array(
-                                                                    'id_seccion' => $row['id_seccion'],
-                                                                    'nombre'     => $row['nombre'],
-                                                                    'codigo'     => $row['codigo'],
-                                                                );
-            }
-            $this->arrayFilas = $arrayTemp;
-        }
-
-        /**
-        * @method setConceptos consultar las secciones del informe
-        */
-        private function setConceptos()
-        {
-            $sql="SELECT id_seccion,id_fila,id_concepto,codigo_concepto,concepto,naturaleza FROM certificado_ingreso_retenciones_empleados_conceptos WHERE activo=1 AND id_empresa=$this->id_empresa";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            while ($row = $this->mysql->fetch_array($query)) {
-                $arrayTemp[$row['id_seccion']][$row['id_fila']][$row['id_concepto']] = array(
-                                                                                            'codigo_concepto' => $row['codigo_concepto'],
-                                                                                            'concepto'        => $row['concepto'],
-                                                                                            'naturaleza'      => $row['naturaleza'],
-                                                                                            );
-                $arrayIdConceptos[$row['id_concepto']] = $row['id_concepto'];
-            }
-
-            $this->arrayConceptosFormato = $arrayTemp;
-            $this->getConceptosValues($arrayIdConceptos);
-        }
-
-        /**
-        * @method getConceptosValues consultar los valores de los conceptos de las planillas
-        */
-        private function getConceptosValues($arrayIdConceptos)
-        {
-            $sql="SELECT id FROM nomina_planillas WHERE activo=1 AND id_empresa=$this->id_empresa AND (estado=1 OR estado=2) AND fecha_inicio>='$this->fecha_inicio' AND fecha_final<='$this->fecha_final' ";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            while ($row=$this->mysql->fetch_array($query)) {
-                $whereIdPlanillas.=($whereIdPlanillas=='')? "id_planilla=".$row['id'] : " OR id_planilla=".$row['id'] ;
-            }
-
-            $sql="SELECT id FROM nomina_planillas_liquidacion WHERE activo=1 AND id_empresa=$this->id_empresa AND (estado=1 OR estado=2) AND fecha_inicio>='$this->fecha_inicio' AND fecha_final<='$this->fecha_final' ";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            while ($row=$this->mysql->fetch_array($query)) {
-                $whereIdPlanillasLiquidacion.=($whereIdPlanillasLiquidacion=='')? "id_planilla=".$row['id'] : " OR id_planilla=".$row['id'] ;
-            }
-
-            foreach ($arrayIdConceptos as $id_concepto => $value) {
-                $whereIdConceptos.=($whereIdConceptos=='')? 'id_concepto='.$id_concepto : ' OR id_concepto='.$id_concepto ;
-            }
-
-            $sql="SELECT
-                        SUM(valor_concepto) AS saldo,
-                        id_concepto,
-                        concepto,
-                        id_empleado,
-                        naturaleza
-                    FROM nomina_planillas_empleados_conceptos
-                    WHERE
-                        activo = 1
-                    AND id_empresa=$this->id_empresa
-                    AND ($whereIdPlanillas)
-                    AND ($whereIdConceptos)
-                    AND id_empleado=$this->id_empleado
-                    AND id_empresa=$this->id_empresa
-                    AND naturaleza<>'Provision'
-                    AND naturaleza<>'Apropiacion'
-                    GROUP BY id_empleado, id_concepto;";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            while ($row=$this->mysql->fetch_array($query)){
-                $arrayTemp[$row['id_concepto']]['concepto'] = utf8_encode($row['concepto']);
-
-                if ($row['naturaleza']=='Deduccion') {
-                    $arrayTemp[$row['id_concepto']]['saldo'] -= $row['saldo'];
-                }
-                else{
-                    $arrayTemp[$row['id_concepto']]['saldo'] += $row['saldo'];
-                }
-
-            }
-
-            $sql="SELECT
-                        SUM(valor_concepto) AS saldo,
-                        SUM(valor_concepto_ajustado) AS saldo_ajustado,
-                        id_concepto,
-                        concepto,
-                        id_empleado,
-                        naturaleza
-                    FROM nomina_planillas_liquidacion_empleados_conceptos
-                    WHERE
-                        activo = 1
-                    AND id_empleado=$this->id_empleado
-                    AND id_empresa=$this->id_empresa
-                    AND ($whereIdPlanillasLiquidacion)
-                    AND ($whereIdConceptos)
-                    GROUP BY id_empleado, id_concepto;";
-            $query=$this->mysql->query($sql,$this->mysql->link);
-            while ($row=$this->mysql->fetch_array($query)){
-                $arrayTemp[$row['id_concepto']]['concepto'] = utf8_encode($row['concepto']);
-
-                if ($row['naturaleza']=='Provision') {
-                    $arrayTemp[$row['id_concepto']]['saldo'] += $row['saldo_ajustado'];
-                }
-                else if ($row['naturaleza']=='Deduccion') {
-                    $arrayTemp[$row['id_concepto']]['saldo'] -= $row['saldo'];
-                }
-                else{
-                    $arrayTemp[$row['id_concepto']]['saldo'] += $row['saldo'];
-                }
-
-            }
-
-            $this->arrayConceptos = $arrayTemp;
-            // echo json_encode($this->arrayConceptos);
-
-        }
-
-        private function setConceptosValue()
-        {
-            $saldo = 0;
-            foreach ($this->arrayConceptosFormato as $id_seccion => $arrayFilas) {
-                foreach ($arrayFilas as $id_fila => $arrayConceptos) {
-                    foreach ($arrayConceptos as $id_concepto => $arrayResult) {
-                        $saldo += $this->arrayConceptos[$id_concepto]['saldo'];
-                        $this->arrayConceptosFormato[$id_seccion][$id_fila][$id_concepto]['saldo'] = $this->arrayConceptos[$id_concepto]['saldo'];
-                    }
-                    $this->arrayConceptosFormato[$id_seccion][$id_fila]['saldo'] = abs($saldo);
-                    $saldo = 0;
-                }
-            }
-        }
-
-        /**
         * @method generate Crear el formato solicitado por el usuario
         */
         public function generate()
@@ -262,9 +74,9 @@
             //     $numero_formato = 'img/numero_formato.png';
             // }
 
-            $logo_dian      = 'logo_dian.png';
-            $logo_muisca    = 'logo_muisca.png';
-            $numero_formato = 'numero_formato.png';
+            $logo_dian      = '../../images/logo_dian.png';
+            $logo_muisca    = '../../images/logo_muisca.png';
+            $numero_formato = '../../images/numero_formato.png';
 
             // list( $anio_inicio,$mes_inicio, $dia_inicio) = split('-', $this->fecha_inicio);
             // list($anio_fin,$mes_fin, $dia_fin, ) = split('-', $this->fecha_final);
@@ -292,7 +104,18 @@
                                                 'nombre2'   => $result['nombre2'], 
                                             ); 
             
-            
+            $sql   = "SELECT * FROM retenciones_empleados WHERE documento='$this->documento' AND anio='$this->anio' ";
+            $query = mysqli_query($this->mysql,$sql);
+            // var_dump($query);
+            $result    = $query->fetch_assoc();
+            $arrayDepto     = str_split($result['departamento']);
+            $arrayMunicipio = str_split($result['municipio']);
+            // $documento = $result['documento'];
+            // $dv        = $result['dv'];
+            // $nombre    = $result['nombre'];
+            // $user_name = $result['user_name'];
+            // $password  = $result['password'];
+            // $rol       = $result['rol'];
             
             
             
@@ -309,10 +132,10 @@
                             console.log("'.$_SERVER['SERVER_NAME'].'");
                         </script>
                         <tr style="height:50px;">
-                            <td colspan="6" class="img"><img align=center src="https://bn1303files.storage.live.com/y3mqF8hd4DlnHxczcotzrCm0DpIn2-YZzdwIcO5li83QybnKyoI725SeL7sHSJaWpy8VCdPML9hOm-7X4hgKM1eVpGCLCYwNFKnZrE3Vsvy5lUSblESwXm5taMfU9RV00bLFSkI88TnJY3kJL2Pl8oZaUYHx5NCtTVfjTd7k-K0Pbo/logo_dian.png?psid=1&width=130&height=50"></td>
+                            <td colspan="6" class="img"><img align=center src="'.$logo_dian.'"></td>
                             <td colspan="20" class="title">CERTIFICADO  DE  INGRESOS  Y  RETENCIONES PARA PERSONAS NATURALES EMPLEADOS  AÑO GRAVABLE</td>
-                            <td colspan="8" class="img"><img align=center src="https://bn1303files.storage.live.com/y3mAsz7dmxbPqDnLog4nAlfvNN3-hg6aVIbJpaM8FnLTMr2KhgUs-kNkhJ-0-yGvj-sGr3FdQpcV_Zw28IbmDsHH82YN4uG3fTQzdYz_Wvos366Sm9CWAMYLUVfNZg-Gcm6_UNqtlpGXaJBandVPxbOrvOpuy3g5U6ZjOWZ1Wmvyy8/logo_muisca.png?psid=1&width=130&height=50"></td>
-                            <td colspan="4" class="img"><img align=center src="https://bn1303files.storage.live.com/y3mbxDUXU56HWN91N3QrYvfa7q8xxVhvAyAaA7fbnRH7-3wcQUKEBAaUHCfVjoDal3on-bTxpMu1uaUCquaOBiq1dLf93s8EAtP-nxSJ-0gF0hoJJKtmCGLyKKy29Ci-sLIM4EebIa6tv4e_QMvUkHxzPDE0Zyjt0QfP4O6L54coik/numero_formato.png?psid=1&width=130&height=50"></td>
+                            <td colspan="8" class="img"><img align=center src="'.$logo_muisca.'"></td>
+                            <td colspan="4" class="img"><img align=center src="'.$numero_formato.'"></td>
                         </tr>
                         <tr>
                             <td colspan="21"></td>
@@ -353,7 +176,7 @@
                             <td style="border-top:none;" colspan="3"></td>
                         </tr>
                         <tr ><td style="border:none;background-color:#CCFFCC;"colspan="37">11. Razon Social</td></tr>
-                        <tr ><td style="border:none;"colspan="37">'.$this->arrayInfoEmpresa['razon_social'].'</td></tr>
+                        <tr ><td style="border:none;" colspan="37" >'.$this->arrayInfoEmpresa['razon_social'].'</td></tr>
 
                         <tr >
                             <td rowspan="4" class="verticalTd title">Asalariado</td>
@@ -406,53 +229,18 @@
                             <td style="border:none;" >'.date("m").'</td>
                             <td style="border:none;" >'.date("d").'</td>
                             <td style="border:none;border-right:0.5px solid;" ></td>
-                            <td style="border:none;border-right:0.5px solid;text-align:center;"  colspan="8">Palmira</td>
+                            <td style="border:none;border-right:0.5px solid;text-align:center;"  colspan="8">'.$result['lugar'].'</td>
                             <td style="border:none;" ></td>
-                            <td style="border:none;border-right:0.5px solid;" ></td>
-                            <td style="border:none;border-right:0.5px solid;" ></td>
-                            <td style="border:none;border-right:0.5px solid;" ></td>
-                            <td style="border:none;border-right:0.5px solid;" ></td>
+                            <td style="border:none;border-right:0.5px solid;" >'.$result['departamento'].'</td>
+                            <td style="border:none;border-right:0.5px solid;" >'.$arrayMunicipio[0].'</td>
+                            <td style="border:none;border-right:0.5px solid;" >'.$arrayMunicipio[1].'</td>
+                            <td style="border:none;border-right:0.5px solid;" >'.$arrayMunicipio[2].'</td>
                         </tr>
                         <tr>
                             <td colspan="24">36. Numero de agencias, sucursales, filiales o subsidiarias de la empresa retenedora cuyos montos de retención se consolidan:</td>
-                            <td colspan="14"></td>
+                            <td colspan="14">'.$result['agencias'].'</td>
                         </tr>
                         ';
-            $style = '';
-            // foreach ($this->arrayFilas as $id_seccion => $arrayFilasResul) {
-            //     $bodyResul.='
-            //                 <tr class="title">
-            //                     <td style="background-color:#FEFF8E;" colspan="27">'.$this->arraySecciones[$id_seccion]['nombre'].'</td>
-            //                     <td style="background-color:#FEFF8E;" colspan="11">Valor</td>
-            //                 </tr>
-            //                 ';
-            //     $acumTotal = 0;
-            //     foreach ($arrayFilasResul as $id_fila => $arrayResult) {
-            //         $bodyResul.='
-            //                     <tr >
-            //                         <td '.$style.' colspan="27">'.$arrayResult['nombre'].'</td>
-            //                         <td '.$style.' >'.$arrayResult['codigo'].'</td>
-            //                         <td '.$style.' colspan="10">'.$this->arrayConceptosFormato[$id_seccion][$id_fila]['saldo'].'</td>
-            //                     </tr>
-            //                     ';
-            //         $acumTotal += $this->arrayConceptosFormato[$id_seccion][$id_fila]['saldo'];
-
-            //         $style=($style=='')? 'style="background-color:#CCFFCC;"' : '' ;
-
-            //     }
-
-            //     if ($this->arraySecciones[$id_seccion]['nombre_total']<>'') {
-            //         $bodyResul.='
-            //                 <tr >
-            //                     <td style="background-color:#006411;color:#FFF;" colspan="27">'.$this->arraySecciones[$id_seccion]['nombre_total'].'</td>
-            //                     <td style="background-color:#006411;color:#FFF;">'.$this->arraySecciones[$id_seccion]['codigo_total'].'</td>
-            //                     <td style="background-color:#006411;color:#FFF;" colspan="10">'.$acumTotal.'</td>
-            //                 </tr>
-
-            //                 ';
-            //     }
-
-            // }
 
             $bodyResul.='
                         <tr class="title">
@@ -462,7 +250,7 @@
                         <tr>
                             <td colspan="27">Pagos por salarios o emolumentos eclesiásticos</td>
                             <td>37</td>
-                            <td colspan="10">0</td>
+                            <td colspan="10">'.$result['37'].'</td>
                         </tr>
                         <tr>
                             <td style="background-color:#CCFFCC;"  colspan="27">Pagos por honorarios</td>
@@ -472,52 +260,52 @@
                         <tr>
                             <td colspan="27">Pagos por servicios</td>
                             <td>39</td>
-                            <td colspan="10">0</td>
+                            <td colspan="10">'.$result['39'].'</td>
                         </tr>
                         <tr>
                             <td style="background-color:#CCFFCC;"  colspan="27">Pagos por comisiones</td>
                             <td style="background-color:#CCFFCC;" >40</td>
-                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">'.$result['40'].'</td>
                         </tr>
                         <tr>
                             <td colspan="27">Pagos por prestaciones sociales</td>
                             <td>41</td>
-                            <td colspan="10">0</td>
+                            <td colspan="10">'.$result['41'].'</td>
                         </tr>
                         <tr>
                             <td style="background-color:#CCFFCC;" colspan="27">Pagos por viáticos</td>
                             <td style="background-color:#CCFFCC;">42</td>
-                            <td style="background-color:#CCFFCC;" colspan="10">0</td>
+                            <td style="background-color:#CCFFCC;" colspan="10">'.$result['42'].'</td>
                         </tr>
                         <tr>
                             <td   colspan="27"> Pagos por gastos de representación</td>
                             <td  >43</td>
-                            <td   colspan="10">0</td>
+                            <td   colspan="10">'.$result['43'].'</td>
                         </tr>
                         <tr>
                             <td style="background-color:#CCFFCC;"  colspan="27"> Pagos por compensaciones por el trabajo asociado cooperativo</td>
                             <td style="background-color:#CCFFCC;" >44</td>
-                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">'.$result['44'].'</td>
                         </tr>
                         <tr>
                             <td colspan="27">Otros pagos</td>
                             <td>45</td>
-                            <td colspan="10">0</td>
+                            <td colspan="10">'.$result['45'].'</td>
                         </tr>
                         <tr>
                             <td style="background-color:#CCFFCC;"  colspan="27">Cesantias e intereses de cesantias efectivamente pagadas, consignadas o reconocidas en el periodo</td>
                             <td style="background-color:#CCFFCC;" >46</td>
-                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">'.$result['46'].'</td>
                         </tr>
                         <tr>
                             <td colspan="27">Pensiones de Jubilación, vejez o invalidez</td>
                             <td>47</td>
-                            <td colspan="10">0</td>
+                            <td colspan="10">'.$result['47'].'</td>
                         </tr>
                         <tr>
                             <td style="background-color:#CCFFCC;"  colspan="27">Total de ingresos brutos (Sume casillas 37 a 47)</td>
                             <td style="background-color:#CCFFCC;" >48</td>
-                            <td style="background-color:#CCFFCC;"  colspan="10">0</td>
+                            <td style="background-color:#CCFFCC;"  colspan="10">'.$result['48'].'</td>
                         </tr>
                         <tr class="title">
                             <td style="background-color:#FEFF8E;" colspan="27">Concepto de los aportes</td>
@@ -526,98 +314,92 @@
                         <tr>
                             <td colspan="27">Aportes obligatorios por salud</td>
                             <td>49</td>
-                            <td colspan="10">0</td>
+                            <td colspan="10">'.$result['49'].'</td>
                         </tr>
                         <tr>
                             <td style="background-color:#CCFFCC;" colspan="27">Aportes obligatorios a fondos de pensiones y solidaridad pensional y Aportes voluntarios al - RAIS</td>
                             <td style="background-color:#CCFFCC;">50</td>
-                            <td style="background-color:#CCFFCC;" colspan="10">0</td>
+                            <td style="background-color:#CCFFCC;" colspan="10">'.$result['50'].'</td>
                         </tr>
                         <tr>
                             <td colspan="27">Aportes voluntarios, a fondos de pensiones</td>
                             <td>51</td>
-                            <td colspan="10">0</td>
+                            <td colspan="10">'.$result['51'].'</td>
                         </tr>
                         <tr>
                             <td style="background-color:#CCFFCC;" colspan="27"> Aportes a cuentas AFC</td>
                             <td style="background-color:#CCFFCC;">52</td>
-                            <td style="background-color:#CCFFCC;" colspan="10">0</td>
+                            <td style="background-color:#CCFFCC;" colspan="10">'.$result['52'].'</td>
                         </tr>
                         <tr>
                             <td colspan="27">Valor de la retención en la fuente por rentas de trabajo y pensiones</td>
                             <td>53</td>
-                            <td colspan="10">0</td>
-                        </tr>
-
-                        <tr>
-                            <td style="background-color:#CCFFCC;" colspan="27">Pagos al empleado  (No incluya valores de las casillas 38 a 41)</td>
-                            <td style="background-color:#CCFFCC;">54</td>
-                            <td style="background-color:#CCFFCC;" colspan="10">0</td>
+                            <td colspan="10">'.$result['53'].'</td>
                         </tr>
                         <tr>
-                            <td colspan="38"><b>Nombre del pagador o agente retenedor</b><br>ALARCON JARAMILLO *CARLOS</td>
+                            <td colspan="38"><b>Nombre del pagador o agente retenedor</b><br>'.$result['nombre_pagador'].'</td>
                         </tr>
 
                         <tr >
                             <td style="background-color:#FEFF8E;" class="title" colspan="38">Datos a Cargo del Asalariado</td>
                         </tr>
                         <tr >
-                            <td style="background-color:#CCFFCC;" colspan="24" >Concepto de otro Ingresos</td>
+                            <td style="background-color:#CCFFCC;text-align:center;" colspan="24" >Concepto de otro Ingresos</td>
                             <td style="background-color:#CCFFCC;" colspan="7">Valor Recibido</td>
                             <td style="background-color:#CCFFCC;" colspan="7">Valor Retenido</td>
                         </tr>
                         <tr>
                             <td colspan="24">Arrendamientos</td>
-                            <td>47</td>
-                            <td colspan="6">-</td>
                             <td>54</td>
+                            <td colspan="6">-</td>
+                            <td>61</td>
                             <td colspan="6">-</td>
                         </tr>
                         <tr >
                             <td style="background-color:#CCFFCC;" colspan="24">Honorarios, comisiones y servicios</td>
-                            <td style="background-color:#CCFFCC;" >48</td>
+                            <td style="background-color:#CCFFCC;" >55</td>
                             <td style="background-color:#CCFFCC;" colspan="6">-</td>
-                            <td style="background-color:#CCFFCC;">55</td>
+                            <td style="background-color:#CCFFCC;">62</td>
                             <td style="background-color:#CCFFCC;" colspan="6">-</td>
                         </tr>
                         <tr>
                             <td colspan="24">Intereses y rendimientos financieros</td>
-                            <td>49</td>
-                            <td colspan="6">-</td>
                             <td>56</td>
+                            <td colspan="6">-</td>
+                            <td>63</td>
                             <td colspan="6">-</td>
                         </tr>
                         <tr >
                             <td style="background-color:#CCFFCC;" colspan="24">Enajenacion de activos fijos</td>
-                            <td style="background-color:#CCFFCC;">50</td>
-                            <td style="background-color:#CCFFCC;" colspan="6">-</td>
                             <td style="background-color:#CCFFCC;">57</td>
+                            <td style="background-color:#CCFFCC;" colspan="6">-</td>
+                            <td style="background-color:#CCFFCC;">64</td>
                             <td style="background-color:#CCFFCC;" colspan="6">-</td>
                         </tr>
                         <tr>
                             <td colspan="24">Loterias, rifas, apuestas y similares</td>
-                            <td>51</td>
-                            <td colspan="6">-</td>
                             <td>58</td>
+                            <td colspan="6">-</td>
+                            <td>65</td>
                             <td colspan="6">-</td>
                         </tr>
                         <tr >
                             <td style="background-color:#CCFFCC;" colspan="24">Otros</td>
-                            <td style="background-color:#CCFFCC;">52</td>
-                            <td style="background-color:#CCFFCC;" colspan="6">-</td>
                             <td style="background-color:#CCFFCC;">59</td>
+                            <td style="background-color:#CCFFCC;" colspan="6">-</td>
+                            <td style="background-color:#CCFFCC;">66</td>
                             <td style="background-color:#CCFFCC;" colspan="6">-</td>
                         </tr>
                         <tr>
                             <td colspan="24">Totales: (Valor recibido: Sume casillas 47 a 52),  (Valor retenido: Sume casillas 54 a  59)</td>
-                            <td>53</td>
-                            <td colspan="6">-</td>
                             <td>60</td>
+                            <td colspan="6">-</td>
+                            <td>67</td>
                             <td colspan="6">-</td>
                         </tr>
                         <tr >
                             <td style="background-color:#CCFFCC;" colspan="31">Total retenciones año gravable '.$this->anio.'  (Sume casillas 46 + 60)</td>
-                            <td style="background-color:#CCFFCC;">61</td>
+                            <td style="background-color:#CCFFCC;">68</td>
                             <td style="background-color:#CCFFCC;" colspan="6">-</td>
                         </tr>
                         <tr class="title">
@@ -651,7 +433,7 @@
                         <tr><td>8</td><td colspan="30"></td><td colspan="7">-</td></tr>
                         <tr >
                             <td style="background-color:#CCFFCC;" colspan="31">Deudas vigentes a 31 de Diciembre de  '.$this->anio.'  </td>
-                            <td style="background-color:#CCFFCC;" colspan="7">64 -</td>
+                            <td style="background-color:#CCFFCC;" colspan="7">71 -</td>
                         </tr>
 
                         <tr >
@@ -659,24 +441,12 @@
                         </tr>
                         <tr >
                             <td style="background-color:#CCFFCC;" >Item</td>
-                            <td style="background-color:#CCFFCC;" colspan="7">65. C.C. o NIT</td>
-                            <td style="background-color:#CCFFCC;" colspan="23">66. Apellidos y Nombres</td>
-                            <td style="background-color:#CCFFCC;" colspan="7">67. Parentesco</td>
+                            <td style="background-color:#CCFFCC;" colspan="7">72. C.C. o NIT</td>
+                            <td style="background-color:#CCFFCC;" colspan="23">73. Apellidos y Nombres</td>
+                            <td style="background-color:#CCFFCC;" colspan="7">74. Parentesco</td>
                         </tr>
-                        <tr><td>1</td><td colspan="7"></td><td colspan="23"></td><td colspan="7"></td></tr>
-                        <tr >
-                            <td style="background-color:#CCFFCC;">2</td>
-                            <td style="background-color:#CCFFCC;" colspan="7"></td>
-                            <td style="background-color:#CCFFCC;" colspan="23"></td>
-                            <td style="background-color:#CCFFCC;" colspan="7"></td>
-                        </tr>
-                        <tr><td>3</td><td colspan="7"></td><td colspan="23"></td><td colspan="7"></td></tr>
-                        <tr >
-                            <td style="background-color:#CCFFCC;">4</td>
-                            <td style="background-color:#CCFFCC;" colspan="7"></td>
-                            <td style="background-color:#CCFFCC;" colspan="23"></td>
-                            <td style="background-color:#CCFFCC;" colspan="7"></td>
-                        </tr>
+                        <tr><td></td><td colspan="7"></td><td colspan="23"></td><td colspan="7"></td></tr>
+                        
                         <tr>
                             <td colspan="27">
                                 Certifico que durante el año gravable '.$this->anio.'  :<br>
@@ -758,7 +528,53 @@
                 </table>
                 ";
 
-            echo $formato;
+            // echo $formato;
+
+            // if(isset($TAM)){$HOJA = $TAM;}else{$HOJA = 'LETTER';}
+            if(isset($TAM)){$HOJA = $TAM;}else{$HOJA = 'LEGAL';}
+            if(!isset($ORIENTACION)){$ORIENTACION = 'P';}
+            if(!isset($PDF_GUARDA)){$PDF_GUARDA = 'false';}
+            if(!isset($IMPRIME_PDF)){$IMPRIME_PDF = 'fal87se';}
+            if(isset($MARGENES)){list($MS, $MD, $MI, $ML) = split( ',', $MARGENES );}else{$MS=10;$MD=10;$MI=10;$ML=10;}
+            if(!isset($TAMANO_ENCA)){$TAMANO_ENCA = 12 ;}
+            // // if($IMPRIME_PDF == 'true'){
+                include("../misc/MPDF54/mpdf.php");
+                $mpdf = new mPDF(
+                            'utf-8',        // mode - default ''
+                            $HOJA,          // format - A4, for example, default ''
+                            12,             // font size - default 0
+                            '',             // default font family
+                            $MI,            // margin_left
+                            $MD,            // margin right
+                            $MS,            // margin top
+                            $ML,            // margin bottom
+                            10,             // margin header
+                            10,             // margin footer
+                            $ORIENTACION    // L - landscape, P - portrait
+                        );
+                $mpdf-> debug = true;
+                // $mpdf->useSubstitutions = true;
+                $mpdf->simpleTables = true;
+                // $mpdf->packTableData= true;
+                $mpdf->SetAutoPageBreak(TRUE, 15);
+                $mpdf->SetTitle ( $this->title );
+                // $mpdf->SetAuthor ( $_SESSION['NOMBREFUNCIONARIO']." // ".$_SESSION['NOMBREEMPRESA'] );
+                $mpdf->SetDisplayMode ( 'fullpage' );
+                // $mpdf->SetHeader("");
+                // $mpdf->SetHTMLFooter("<div style='width:100%;font-size:14px;'>
+                //                         <div style='float:left;width:50%;' >
+                //                             Fecha de generacion: ".date("Y-m-d")."
+                //                         </div>
+                //                         <div style='float:left;width:50%;text-align:right;' >
+                //                             Hora de generacion: ".date("H:i:s")."
+                //                         </div>
+                //                     </div>");
+                // $mpdf->SetFooter('Pagina {PAGENO}');
+
+                $mpdf->WriteHTML( $formato );
+                // $mpdf->WriteHTML( 'hola' );
+                $mpdf->Output($documento.".pdf",'I');
+
         }
 
         

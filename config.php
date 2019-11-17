@@ -22,16 +22,16 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <link rel="stylesheet" href="css/icon-font.min.css" type='text/css' />
 <!-- //lined-icons -->
 <!-- chart -->
-<script src="js/Chart.js"></script>
+<!-- <script src="js/Chart.js"></script> -->
 <!-- //chart -->
-
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="js/dropzone.js"></script>
 
 <!--animate-->
 <link href="css/animate.css" rel="stylesheet" type="text/css" media="all">
-<script src="js/wow.min.js"></script>
+<!-- <script src="js/wow.min.js"></script> -->
 	<script>
-		 new WOW().init();
+		 // new WOW().init();
 	</script>
 <!--//end-animate-->
 <!----webfonts--->
@@ -314,12 +314,16 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
    <div class="containLoad" id="containLoad" style="visibility: hidden;">
 		<div id="dropzone">
 			<span style="color: #FFF;font-weight: bold;font-size: 25px;cursor: pointer;" onclick="showHiddenUpload()">X</span>
-			<form action="" class="dropzone needsclick dz-clickable" id="upload">
+			<form action="backend/config/upload_file.php" onsubmit="validaResponse()" id="myform" class="dropzone needsclick dz-clickable" id="upload">
 			<h4>
 				El formato de excel debera tener la siguiente estructura y se cargara informacion a
 				partir de la segunda fila, la primera fila se tomara como el titulo del excel
 			</h4>
-			<img src="images/guia.png" style="width: 100%;height: 100px;">
+			<div id="ingresos_help" style="display: none;">
+				<i class="material-icons" style="font-size: 60px;cursor: pointer;" onclick="downloadModelo()"> cloud_download </i>
+				<h5>Descargar formato modelo</h5>
+			</div>
+			<img src="images/guia.png" style="width: 100%;height: 100px;" id="img_guia">
 			  <input type="date" name="anio" id="anio" >
 			  <div class="dz-message needsclick">
 			  	<h2 id='titleCert'></h2>
@@ -337,31 +341,48 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <!-- Bootstrap Core JavaScript -->
 <script src="js/bootstrap.min.js"></script>
 <script>
+	// Dropzone.options.myAwesomeDropzone = false;
 	// var myDropzone = new Dropzone("#upload", { url: "/file/post"});
-	var dropzone = new Dropzone(
-								"div#dropzone", 
-								{ 
-									url: "backend/config/upload_file.php",
-								 	success : function(file, result){
-								        // console.log(file);
-								        // console.log(result);
-	            						var response = jQuery.parseJSON( result );
-	            						console.log(response);
-	            						alert(response.msg)
-	            						if (response.status=='success'){ location.reload(); }
-								    }
-								}
-							);
+	var typeCert = ''
+	,	anio     = ''
+
+	// var dropzone = new Dropzone(
+	// 							"div#dropzone", 
+	// 							{ 
+	// 								url: "backend/config/upload_file.php",
+	// 								params : {typeCert:typeCert, anio:anio},
+	// 							 	success : function(file, result){
+	// 							        // console.log(file);
+	// 							        // console.log(result);
+	//             						var response = jQuery.parseJSON( result );
+	//             						console.log(response);
+	//             						alert(response.msg)
+	//             						if (response.status=='success'){ location.reload(); }
+	// 							    }
+	// 							}
+	// 						);
 	var configCert=(type)=>{
 		// config_report
 		window.location = "config_report.php?type="+type;
 	}
-
-	var showHiddenUpload = (typeCert)=>{
+	// var validaResponse =()=>{
+	// 	var formulario = document.getElementById("myform");	
+	// 	var dato = formulario[0];
+	//  	console.log(formulario);
+	// 	if (dato.value=="enviar"){
+	// 		alert("Enviando el formulario");
+	// 		formulario.submit();
+	// 		return true;
+	// 	} else {
+	// 		alert("No se envía el formulario");
+	// 		return false;
+	// 	}
+	// }
+	var showHiddenUpload = (type)=>{
 		// console.log($(".containLoad"));
 		let style=document.getElementById('containLoad').getAttribute("style")
 		,	title_upload = ''
-		switch(typeCert){
+		switch(type){
 			case 'fuente':
 				title_upload = 'Cargar rete fuente';
 			break;
@@ -376,10 +397,15 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 			break;
 			case 'ingresos_retenciones':
 				title_upload = 'Cargar ingresos y retenciones';
+				document.getElementById('img_guia').style.display      = 'none';
+				document.getElementById('anio').style.display          = 'none';
+				document.getElementById('ingresos_help').style.display = 'block';
+				// ingresos_help
 			break;
 		}
 
-		document.getElementById('typeCert').value=typeCert;
+		// typeCert = type;
+		document.getElementById('typeCert').value=type;
 		document.getElementById('titleCert').innerHTML=title_upload;
 		// console.log(style);
 		if (style=='visibility: hidden;') {			
@@ -421,7 +447,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				else{ alert(response.msg) }
             }
         });
+	}
 
+	var downloadModelo = ()=>{
+		 window.open('modelo_ingreso_retenciones.xlsx','','_blank');
+		// modelo_ingreso_retenciones
 	}
 
 </script>

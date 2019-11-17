@@ -25,7 +25,11 @@
         rollback($filename);
         exit;
     }
-    if ($anio=='') {
+    if ($anio=='' && $typeCert<>'ingresos_retenciones') {
+        echo "<script>
+                    alert('in');
+                </script>
+                ";
         $arrayResponse = array('status' => 'failed', 'msg'=>"debe digitar el año");
         echo utf8_encode( json_encode($arrayResponse) );
         rollback($filename);
