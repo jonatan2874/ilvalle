@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * 
+     *
      */
     class ClassCertificado
     {
@@ -23,7 +23,7 @@
             else {
                 $response = array('response' => 'failed', 'msg'=>'No se Actualizo el formato','error' => '', 'debug' => $sql );
             }
-            
+
 
             echo json_encode($response);
         }
@@ -83,7 +83,7 @@
                             *
                         FROM retenciones_proveedores
                         WHERE documento_proveedor=$nit
-                        AND anio='$anio'
+                        AND anio BETWEEN '$anio-01-01' AND '$anio-12-31'
                         AND tipo='$typeCert' ";
             $query = mysqli_query($this->mysql,$sql);
             $query = mysqli_query($this->mysql,$sql);
@@ -123,7 +123,7 @@
             $content = str_replace('{anio}', $anio, $content);
             $content = str_replace('{cliente}', $cliente, $content);
             $content = str_replace('{nit}', $nit, $content);
-            $content = str_replace('{retenciones}', 
+            $content = str_replace('{retenciones}',
                                                     "<table class='table'>
                                                         <tr>
                                                             <td >CONCEPTO</td>
@@ -136,10 +136,10 @@
             $content = str_replace('{total_Retenido}', number_format($acumTotal, 2, "." , "," ), $content);
             $content = str_replace('{ciudad}', $ciudad, $content);
             $content = str_replace('{fecha_expedicion}', $fecha_expedicion, $content);
-            // echo utf8_encode($content); 
+            // echo utf8_encode($content);
             // return;
 
-            ?>  
+            ?>
                 <style>
                     .parent-content{
                         width: 100%;
@@ -157,8 +157,8 @@
 
                     .typeCert{
                         width         : 50%;
-                        float         : left; 
-                        border        : 1px solid; 
+                        float         : left;
+                        border        : 1px solid;
                         border-radius : 10px;
                         height        : 100px;
                         text-align    : center;
@@ -173,7 +173,7 @@
                         border-collapse: collapse;
                         font-size: 11px;
                     }
-        
+
                     .titleCert{
                         width           : 400px;
                         float           : left;
@@ -193,7 +193,7 @@
                         float         : left;
                         margin-top    : 10px;
                         text-align    : center;
-                        padding       : 10px;  
+                        padding       : 10px;
                     }
                     .title h5,h2{
                         margin: 0px;
@@ -226,9 +226,9 @@
                 </style>
 
             <?php
-            echo utf8_encode($content); 
+            echo utf8_encode($content);
             return;
-            ?>  
+            ?>
                 <style>
                     .parent-content{
                         width: 100%;
@@ -246,8 +246,8 @@
 
                     .typeCert{
                         width         : 50%;
-                        float         : left; 
-                        border        : 1px solid; 
+                        float         : left;
+                        border        : 1px solid;
                         border-radius : 10px;
                         height        : 100px;
                         text-align    : center;
@@ -262,7 +262,7 @@
                         border-collapse: collapse;
                         font-size: 11px;
                     }
-        
+
                     .titleCert{
                         width           : 400px;
                         float           : left;
@@ -282,7 +282,7 @@
                         float         : left;
                         margin-top    : 10px;
                         text-align    : center;
-                        padding       : 10px;  
+                        padding       : 10px;
                     }
                     .title h5,h2{
                         margin: 0px;
@@ -325,24 +325,24 @@
                             <div style="width: 200px;float: left;" > -->
                                 <table >
                                     <tr>
-                                        <td>                                            
+                                        <td>
                                             <img style='width:200px;' src='../../images/LogoILV.jpg'>
                                         </td>
-                                        <td>                                            
+                                        <td>
                                             <img style='width:50px;' src='../../images/LOGO ISO 9001.png'>
                                             <br>No SC 639-1
                                         </td>
-                                        <td>                                            
-                                            <img style='width:70px;' src='../../images/IQNet.png'>                            
+                                        <td>
+                                            <img style='width:70px;' src='../../images/IQNet.png'>
                                         </td>
                                     </tr>
                                 </table>
                             <!-- </div> -->
                         </div>
                         <div class="typeCert">
-                            <?= $title ?>  <br>                               
-                            <?= $anio ?>                                 
-                        </div>                    
+                            <?= $title ?>  <br>
+                            <?= $anio ?>
+                        </div>
                     </div>
                     <div class="title">
                         <h2>INDUSTRIA DE LICORES DEL VALLE</h2>
@@ -386,8 +386,8 @@
             $this->getData($nit,$anio,$typeCert);
             // exit;
 
-            $contentCert = ob_get_contents(); 
-            ob_end_clean(); 
+            $contentCert = ob_get_contents();
+            ob_end_clean();
             // flush();
             // ob_clean();
             // echo $contentCert; exit;
@@ -412,7 +412,7 @@
                             10,             // margin footer
                             $ORIENTACION    // L - landscape, P - portrait
                         );
-                $mpdf-> debug = true;
+                // $mpdf-> debug = true;
                 // $mpdf->useSubstitutions = true;
                 $mpdf->simpleTables = true;
                 // $mpdf->packTableData= true;
@@ -441,5 +441,5 @@
 
         }
     }
-   
+
 ?>

@@ -48,7 +48,7 @@
             // $this->id_empresa     = $id_empresa;
             $this->IMPRIME_XLS    = $IMPRIME_XLS;
             $this->mysql          = $mysql;
-            // $arrayFormatStructure['Concepto de los Ingresos'] = 
+            // $arrayFormatStructure['Concepto de los Ingresos'] =
         }
 
         /**
@@ -85,7 +85,7 @@
                                                 'digito_verificacion' => '0',
                                                 'razon_social'        => 'INDUSTRIA DE LICORES DEL VALLE',
                                             );
-            $sql   = "SELECT  
+            $sql   = "SELECT
                         documento,
                         nombre,
                         nombre1,
@@ -97,13 +97,13 @@
             // var_dump($query);
             $result    = $query->fetch_assoc();
             $this->arrayInfoEmpleado = array(
-                                                'documento' => $result['documento'], 
-                                                'apellido1' => $result['apellido1'], 
-                                                'apellido2' => $result['apellido2'], 
-                                                'nombre1'   => $result['nombre1'], 
-                                                'nombre2'   => $result['nombre2'], 
-                                            ); 
-            
+                                                'documento' => $result['documento'],
+                                                'apellido1' => $result['apellido1'],
+                                                'apellido2' => $result['apellido2'],
+                                                'nombre1'   => $result['nombre1'],
+                                                'nombre2'   => $result['nombre2'],
+                                            );
+
             $sql   = "SELECT * FROM retenciones_empleados WHERE documento='$this->documento' AND anio='$this->anio' ";
             $query = mysqli_query($this->mysql,$sql);
             // var_dump($query);
@@ -116,12 +116,12 @@
             // $user_name = $result['user_name'];
             // $password  = $result['password'];
             // $rol       = $result['rol'];
-            
-            
-            
-            // $this->arrayInfoEmpresa['documento']           = 
-            // $this->arrayInfoEmpresa['digito_verificacion'] = 
-            // $this->arrayInfoEmpresa['razon_social']        = 
+
+
+
+            // $this->arrayInfoEmpresa['documento']           =
+            // $this->arrayInfoEmpresa['digito_verificacion'] =
+            // $this->arrayInfoEmpresa['razon_social']        =
 
             // $this->arrayInfoEmpresa['documento']='';
             // $this->arrayInfoEmpresa['digito_verificacion'] = 0;
@@ -446,7 +446,7 @@
                             <td style="background-color:#CCFFCC;" colspan="7">74. Parentesco</td>
                         </tr>
                         <tr><td></td><td colspan="7"></td><td colspan="23"></td><td colspan="7"></td></tr>
-                        
+
                         <tr>
                             <td colspan="27">
                                 Certifico que durante el año gravable '.$this->anio.'  :<br>
@@ -552,7 +552,7 @@
                             10,             // margin footer
                             $ORIENTACION    // L - landscape, P - portrait
                         );
-                $mpdf-> debug = true;
+                // $mpdf-> debug = true;
                 // $mpdf->useSubstitutions = true;
                 $mpdf->simpleTables = true;
                 // $mpdf->packTableData= true;
@@ -577,7 +577,7 @@
 
         }
 
-        
+
     }
 
 ?>
